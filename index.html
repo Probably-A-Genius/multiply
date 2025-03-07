@@ -74,14 +74,14 @@
         <canvas id="progressChart"></canvas>
     </div>
     <script>
-        let problems = [], index = 0, correctAnswers = [], times = [], timer, answerTimeout;
-        let progressData = JSON.parse(localStorage.getItem("progressData")) || [];
+        let problems = [], index = 0, correctAnswers = [], times = [], missedCount = 0;
         function startQuiz() {
             let numQuestions = document.getElementById("numQuestions").value;
             let timeLimit = document.getElementById("timeLimit").value * 1000;
             problems = [];
             correctAnswers = [];
             times = [];
+            missedCount = 0;
             index = 0;
             for (let i = 0; i < numQuestions; i++) {
                 let a = Math.floor(Math.random() * 90) + 10;
@@ -95,7 +95,6 @@
         function nextProblem(timeLimit) {
             if (index >= problems.length) return showResults();
             clearTimeout(timer);
-            clearTimeout(answerTimeout);
             let problem = problems[index];
             document.getElementById("problem").innerHTML = `<div class="multiplication-container"><div>${problem.a}<br>x ${problem.b}</div></div>`;
             let answerInput = document.getElementById("answer");
@@ -106,18 +105,18 @@
             timer = setTimeout(() => {
                 document.getElementById("problem").innerHTML = `<div class="multiplication-container"><div>${problem.a}<br>x ${problem.b}<br>=<br>${problem.answer}</div></div>`;
                 answerInput.style.display = "none";
-                answerTimeout = setTimeout(() => {
+                missedCount++;
+                setTimeout(() => {
                     times.push(timeLimit / 1000);
                     correctAnswers.push(`<span class='missed'>${problem.a} × ${problem.b} = ${problem.answer} (Missed)</span>`);
                     index++;
                     nextProblem(timeLimit);
-                }, 5000);
+                }, 2000);
             }, timeLimit);
             answerInput.oninput = function() {
                 let userAnswer = parseInt(this.value);
                 if (userAnswer === problem.answer) {
                     clearTimeout(timer);
-                    clearTimeout(answerTimeout);
                     times.push((Date.now() - startTime) / 1000);
                     correctAnswers.push(`${problem.a} × ${problem.b} = ${problem.answer} (Correct)`);
                     index++;
@@ -128,14 +127,13 @@
         function showResults() {
             document.getElementById("quiz").style.display = "none";
             let resultsDiv = document.getElementById("results");
+            let correctTimes = times.filter((_, i) => !correctAnswers[i].includes("Missed"));
             resultsDiv.innerHTML = `<h2>Results</h2>
-                                    <p>Set Mean: ${times.reduce((a, b) => a + b, 0) / times.length}s</p>
-                                    <p>Fastest: ${Math.min(...times)}s</p>
-                                    <p>Slowest: ${Math.max(...times)}s</p>
-                                    <p>Best of 10: ${Math.min(...times.slice(-10))}s</p>
-                                    <p>Best of 50: ${Math.min(...times.slice(-50))}s</p>
-                                    <p>Best of 100: ${Math.min(...times.slice(-100))}s</p>`;
-            resultsDiv.innerHTML += correctAnswers.map((result, i) => `Q${i + 1}: ${result} - Time: ${times[i]}s<br>`).join("");
+                                    <p>Set Mean: ${(times.reduce((a, b) => a + b, 0) / times.length).toFixed(2)}s</p>
+                                    <p>Fastest: ${Math.min(...times).toFixed(2)}s</p>
+                                    <p>Slowest (Correct Answers Only): ${correctTimes.length > 0 ? Math.max(...correctTimes).toFixed(2) : "N/A"}s</p>
+                                    <p>Missed: ${missedCount}</p>`;
+            resultsDiv.innerHTML += correctAnswers.map((result, i) => `Q${i + 1}: ${result} - Time: ${times[i].toFixed(2)}s<br>`).join("");
             resultsDiv.style.display = "block";
             document.getElementById("settings").style.display = "block";
         }
