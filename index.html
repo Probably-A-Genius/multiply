@@ -15,20 +15,6 @@
         #problem {
             font-size: 4em;
             margin: 20px 0;
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            justify-content: center;
-            line-height: 1.5em;
-        }
-        .multiplication-container {
-            display: flex;
-            flex-direction: column;
-            align-items: center;
-            text-align: right;
-        }
-        .multiplication-container div {
-            text-align: center;
         }
         #answer {
             background: black;
@@ -64,7 +50,7 @@
         <button style="font-size: 1.5em;" onclick="showStats()">Stats</button>
     </div>
     <div id="quiz" style="display:none;">
-        <div id="problem" class="multiplication-container"></div>
+        <div id="problem"></div>
         <input type="text" id="answer" autocomplete="off" autofocus>
         <div id="timer" style="font-size: 2em; margin-top: 10px;"></div>
     </div>
@@ -96,14 +82,14 @@
             if (index >= problems.length) return showResults();
             clearTimeout(timer);
             let problem = problems[index];
-            document.getElementById("problem").innerHTML = `<div class="multiplication-container"><div>${problem.a}<br>x ${problem.b}</div></div>`;
+            document.getElementById("problem").innerHTML = `${problem.a} × ${problem.b} =`;
             let answerInput = document.getElementById("answer");
             answerInput.value = "";
             answerInput.style.display = "block";
             answerInput.focus();
             let startTime = Date.now();
             timer = setTimeout(() => {
-                document.getElementById("problem").innerHTML = `<div class="multiplication-container"><div>${problem.a}<br>x ${problem.b}<br>=<br>${problem.answer}</div></div>`;
+                document.getElementById("problem").innerHTML = `${problem.a} × ${problem.b} = ${problem.answer}`;
                 answerInput.style.display = "none";
                 missedCount++;
                 setTimeout(() => {
