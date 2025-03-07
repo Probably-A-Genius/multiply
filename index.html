@@ -1,0 +1,92 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mental Math Trainer</title>
+    <style>
+        body {
+            background-color: black;
+            color: limegreen;
+            font-family: monospace;
+            text-align: center;
+        }
+        #problem {
+            font-size: 3em;
+        }
+        input {
+            background: black;
+            border: none;
+            color: limegreen;
+            font-size: 2em;
+            text-align: center;
+            outline: none;
+            caret-color: transparent;
+        }
+    </style>
+</head>
+<body>
+    <h1>Mental Math Trainer</h1>
+    <div id="settings">
+        <label>Number of Questions: <input type="number" id="numQuestions" value="10"></label>
+        <label>Time per Question (seconds): <input type="number" id="timeLimit" value="2"></label>
+        <button onclick="startQuiz()">Start</button>
+    </div>
+    <div id="quiz" style="display:none;">
+        <div id="problem"></div>
+        <input type="text" id="answer" autocomplete="off" autofocus>
+        <div id="timer"></div>
+    </div>
+    <script>
+        let problems = [], index = 0, correctAnswers = [], times = [], timer;
+        function startQuiz() {
+            let numQuestions = document.getElementById("numQuestions").value;
+            let timeLimit = document.getElementById("timeLimit").value * 1000;
+            problems = [];
+            correctAnswers = [];
+            times = [];
+            index = 0;
+            for (let i = 0; i < numQuestions; i++) {
+                let a = Math.floor(Math.random() * 90) + 10;
+                let b = Math.floor(Math.random() * 90) + 10;
+                problems.push({ a, b, answer: a * b });
+            }
+            document.getElementById("settings").style.display = "none";
+            document.getElementById("quiz").style.display = "block";
+            nextProblem(timeLimit);
+        }
+        function nextProblem(timeLimit) {
+            if (index >= problems.length) return showResults();
+            let problem = problems[index];
+            document.getElementById("problem").innerText = `${problem.a} x ${problem.b}`;
+            document.getElementById("answer").value = "";
+            let startTime = Date.now();
+            timer = setTimeout(() => {
+                times.push(timeLimit / 1000);
+                correctAnswers.push("Missed");
+                index++;
+                nextProblem(timeLimit);
+            }, timeLimit);
+            document.getElementById("answer").oninput = function() {
+                let userAnswer = parseInt(this.value);
+                if (userAnswer === problem.answer) {
+                    clearTimeout(timer);
+                    times.push((Date.now() - startTime) / 1000);
+                    correctAnswers.push("Correct");
+                    index++;
+                    nextProblem(timeLimit);
+                }
+            };
+        }
+        function showResults() {
+            document.getElementById("quiz").style.display = "none";
+            let totalTime = times.reduce((a, b) => a + b, 0);
+            let fastest = Math.min(...times);
+            let slowest = Math.max(...times);
+            let missed = correctAnswers.filter(ans => ans === "Missed").length;
+            alert(`Results:\nTotal Time: ${totalTime}s\nMean Time: ${(totalTime / times.length).toFixed(2)}s\nFastest: ${fastest}s\nSlowest: ${slowest}s\nMissed: ${missed}`);
+            document.getElementById("settings").style.display = "block";
+        }
+    </script>
+</body>
+</html>
