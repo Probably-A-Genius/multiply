@@ -21,6 +21,7 @@
         }
         .multiplication-container {
             display: flex;
+            flex-direction: row;
             align-items: center;
             justify-content: center;
         }
@@ -84,14 +85,14 @@
         function nextProblem(timeLimit) {
             if (index >= problems.length) return showResults();
             let problem = problems[index];
-            document.getElementById("problem").innerHTML = `<span>x</span> <div>${problem.a}<br>${problem.b}</div>`;
+            document.getElementById("problem").innerHTML = `<div class="multiplication-container"><span>x</span><div>${problem.a}<br>${problem.b}</div></div>`;
             let answerInput = document.getElementById("answer");
             answerInput.value = "";
             answerInput.style.display = "block";
             answerInput.focus();
             let startTime = Date.now();
             timer = setTimeout(() => {
-                document.getElementById("problem").innerHTML = `<span>x</span> <div>${problem.a}<br>${problem.b}<br>=<br>${problem.answer}</div>`;
+                document.getElementById("problem").innerHTML = `<div class="multiplication-container"><span>x</span><div>${problem.a}<br>${problem.b}<br>=<br>${problem.answer}</div></div>`;
                 setTimeout(() => {
                     times.push(timeLimit / 1000);
                     correctAnswers.push(`Missed (Ans: ${problem.answer})`);
