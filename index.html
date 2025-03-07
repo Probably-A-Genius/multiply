@@ -15,15 +15,24 @@
             font-size: 3em;
             margin: 20px 0;
         }
-        input {
+        #answer {
             background: black;
             border: 2px solid limegreen;
             color: limegreen;
             font-size: 2em;
             text-align: center;
             outline: none;
-            width: 100px;
-            margin-top: 10px;
+            width: 150px;
+            margin: 20px auto;
+            display: block;
+        }
+        #results {
+            display: none;
+            text-align: left;
+            margin: 20px auto;
+            width: 50%;
+            border: 1px solid limegreen;
+            padding: 10px;
         }
     </style>
 </head>
@@ -39,6 +48,7 @@
         <input type="text" id="answer" autocomplete="off" autofocus>
         <div id="timer"></div>
     </div>
+    <div id="results"></div>
     <script>
         let problems = [], index = 0, correctAnswers = [], times = [], timer;
         function startQuiz() {
@@ -85,11 +95,19 @@
         }
         function showResults() {
             document.getElementById("quiz").style.display = "none";
+            let resultsDiv = document.getElementById("results");
+            resultsDiv.innerHTML = "<h2>Results</h2>";
             let totalTime = times.reduce((a, b) => a + b, 0);
             let fastest = Math.min(...times);
             let slowest = Math.max(...times);
             let missed = correctAnswers.filter(ans => ans === "Missed").length;
-            alert(`Results:\nTotal Time: ${totalTime}s\nMean Time: ${(totalTime / times.length).toFixed(2)}s\nFastest: ${fastest}s\nSlowest: ${slowest}s\nMissed: ${missed}`);
+            resultsDiv.innerHTML += `Total Time: ${totalTime}s<br>Mean Time: ${(totalTime / times.length).toFixed(2)}s<br>`;
+            resultsDiv.innerHTML += `Fastest: ${fastest}s<br>Slowest: ${slowest}s<br>Missed: ${missed}<br><br>`;
+            resultsDiv.innerHTML += "<h3>Problem Breakdown</h3>";
+            for (let i = 0; i < problems.length; i++) {
+                resultsDiv.innerHTML += `${problems[i].a} x ${problems[i].b} = ${problems[i].answer} (Time: ${times[i]}s, ${correctAnswers[i]})<br>`;
+            }
+            resultsDiv.style.display = "block";
             document.getElementById("settings").style.display = "block";
         }
     </script>
