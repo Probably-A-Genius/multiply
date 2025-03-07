@@ -22,13 +22,11 @@
         }
         .multiplication-container {
             display: flex;
-            flex-direction: row;
+            flex-direction: column;
             align-items: center;
-            justify-content: center;
         }
         .multiplication-container span {
             font-size: 2em;
-            margin-right: 10px;
         }
         #answer {
             background: black;
@@ -116,7 +114,7 @@
                     clearTimeout(timer);
                     clearTimeout(answerTimeout);
                     times.push((Date.now() - startTime) / 1000);
-                    correctAnswers.push("Correct");
+                    correctAnswers.push(problem.a + " × " + problem.b + " = " + problem.answer + " (Correct)");
                     index++;
                     nextProblem(timeLimit);
                 }
@@ -130,7 +128,8 @@
             let meanTime = (totalTime / times.length).toFixed(2);
             progressData.push(parseFloat(meanTime));
             localStorage.setItem("progressData", JSON.stringify(progressData));
-            resultsDiv.innerHTML += `Mean Time: ${meanTime}s<br>`;
+            resultsDiv.innerHTML += `Mean Time: ${meanTime}s<br><br>`;
+            resultsDiv.innerHTML += correctAnswers.map((result, i) => `Q${i + 1}: ${result} - Time: ${times[i]}s<br>`).join("");
             resultsDiv.style.display = "block";
             document.getElementById("settings").style.display = "block";
         }
