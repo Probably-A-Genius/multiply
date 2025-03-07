@@ -18,12 +18,14 @@
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
             line-height: 1.5em;
         }
         .multiplication-container {
             display: flex;
             flex-direction: column;
             align-items: center;
+            justify-content: center;
         }
         .multiplication-container span {
             font-size: 1.5em;
@@ -131,7 +133,7 @@
             let meanTime = (totalTime / times.length).toFixed(2);
             progressData.push(parseFloat(meanTime));
             localStorage.setItem("progressData", JSON.stringify(progressData));
-            resultsDiv.innerHTML += `Set Mean: ${meanTime}s<br><br>`;
+            resultsDiv.innerHTML += `Set Mean: ${meanTime}s<br>Fastest: ${Math.min(...times)}s<br>Slowest: ${Math.max(...times)}s<br>Best of 10: ${Math.min(...times.slice(-10))}s<br>Best of 50: ${Math.min(...times.slice(-50))}s<br>Best of 100: ${Math.min(...times.slice(-100))}s<br><br>`;
             resultsDiv.innerHTML += correctAnswers.map((result, i) => `Q${i + 1}: ${result} - Time: ${times[i]}s<br>`).join("");
             resultsDiv.style.display = "block";
             document.getElementById("settings").style.display = "block";
