@@ -13,15 +13,17 @@
         }
         #problem {
             font-size: 3em;
+            margin: 20px 0;
         }
         input {
             background: black;
-            border: none;
+            border: 2px solid limegreen;
             color: limegreen;
             font-size: 2em;
             text-align: center;
             outline: none;
-            caret-color: transparent;
+            width: 100px;
+            margin-top: 10px;
         }
     </style>
 </head>
@@ -59,7 +61,10 @@
             if (index >= problems.length) return showResults();
             let problem = problems[index];
             document.getElementById("problem").innerText = `${problem.a} x ${problem.b}`;
-            document.getElementById("answer").value = "";
+            let answerInput = document.getElementById("answer");
+            answerInput.value = "";
+            answerInput.style.display = "block";
+            answerInput.focus();
             let startTime = Date.now();
             timer = setTimeout(() => {
                 times.push(timeLimit / 1000);
@@ -67,7 +72,7 @@
                 index++;
                 nextProblem(timeLimit);
             }, timeLimit);
-            document.getElementById("answer").oninput = function() {
+            answerInput.oninput = function() {
                 let userAnswer = parseInt(this.value);
                 if (userAnswer === problem.answer) {
                     clearTimeout(timer);
