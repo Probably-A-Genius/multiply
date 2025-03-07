@@ -65,7 +65,7 @@
     </div>
     <div id="results"></div>
     <script>
-        let problems = [], index = 0, correctAnswers = [], times = [], timer;
+        let problems = [], index = 0, correctAnswers = [], times = [], timer, answerTimeout;
         function startQuiz() {
             let numQuestions = document.getElementById("numQuestions").value;
             let timeLimit = document.getElementById("timeLimit").value * 1000;
@@ -84,6 +84,8 @@
         }
         function nextProblem(timeLimit) {
             if (index >= problems.length) return showResults();
+            clearTimeout(timer);
+            clearTimeout(answerTimeout);
             let problem = problems[index];
             document.getElementById("problem").innerHTML = `<div class="multiplication-container"><span>x</span><div>${problem.a}<br>${problem.b}</div></div>`;
             let answerInput = document.getElementById("answer");
@@ -93,7 +95,8 @@
             let startTime = Date.now();
             timer = setTimeout(() => {
                 document.getElementById("problem").innerHTML = `<div class="multiplication-container"><span>x</span><div>${problem.a}<br>${problem.b}<br>=<br>${problem.answer}</div></div>`;
-                setTimeout(() => {
+                answerInput.style.display = "none";
+                answerTimeout = setTimeout(() => {
                     times.push(timeLimit / 1000);
                     correctAnswers.push(`Missed (Ans: ${problem.answer})`);
                     index++;
@@ -104,6 +107,7 @@
                 let userAnswer = parseInt(this.value);
                 if (userAnswer === problem.answer) {
                     clearTimeout(timer);
+                    clearTimeout(answerTimeout);
                     times.push((Date.now() - startTime) / 1000);
                     correctAnswers.push("Correct");
                     index++;
