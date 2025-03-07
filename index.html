@@ -25,10 +25,10 @@
             display: flex;
             flex-direction: column;
             align-items: center;
-            justify-content: center;
+            text-align: right;
         }
-        .multiplication-container span {
-            font-size: 1.5em;
+        .multiplication-container div {
+            text-align: center;
         }
         #answer {
             background: black;
@@ -128,12 +128,13 @@
         function showResults() {
             document.getElementById("quiz").style.display = "none";
             let resultsDiv = document.getElementById("results");
-            resultsDiv.innerHTML = "<h2>Results</h2>";
-            let totalTime = times.reduce((a, b) => a + b, 0);
-            let meanTime = (totalTime / times.length).toFixed(2);
-            progressData.push(parseFloat(meanTime));
-            localStorage.setItem("progressData", JSON.stringify(progressData));
-            resultsDiv.innerHTML += `Set Mean: ${meanTime}s<br>Fastest: ${Math.min(...times)}s<br>Slowest: ${Math.max(...times)}s<br>Best of 10: ${Math.min(...times.slice(-10))}s<br>Best of 50: ${Math.min(...times.slice(-50))}s<br>Best of 100: ${Math.min(...times.slice(-100))}s<br><br>`;
+            resultsDiv.innerHTML = `<h2>Results</h2>
+                                    <p>Set Mean: ${times.reduce((a, b) => a + b, 0) / times.length}s</p>
+                                    <p>Fastest: ${Math.min(...times)}s</p>
+                                    <p>Slowest: ${Math.max(...times)}s</p>
+                                    <p>Best of 10: ${Math.min(...times.slice(-10))}s</p>
+                                    <p>Best of 50: ${Math.min(...times.slice(-50))}s</p>
+                                    <p>Best of 100: ${Math.min(...times.slice(-100))}s</p>`;
             resultsDiv.innerHTML += correctAnswers.map((result, i) => `Q${i + 1}: ${result} - Time: ${times[i]}s<br>`).join("");
             resultsDiv.style.display = "block";
             document.getElementById("settings").style.display = "block";
