@@ -4,6 +4,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Mental Math Trainer</title>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         body {
             background-color: black;
@@ -40,7 +41,7 @@
             margin: 20px auto;
             display: block;
         }
-        #results {
+        #results, #stats {
             display: none;
             text-align: left;
             margin: 20px auto;
@@ -57,6 +58,7 @@
         <label style="font-size: 1.5em;">Number of Questions: <input type="number" id="numQuestions" value="10"></label>
         <label style="font-size: 1.5em;">Time per Question (seconds): <input type="number" id="timeLimit" value="2"></label>
         <button style="font-size: 1.5em;" onclick="startQuiz()">Start</button>
+        <button style="font-size: 1.5em;" onclick="showStats()">Stats</button>
     </div>
     <div id="quiz" style="display:none;">
         <div id="problem" class="multiplication-container"></div>
@@ -64,8 +66,13 @@
         <div id="timer" style="font-size: 2em; margin-top: 10px;"></div>
     </div>
     <div id="results"></div>
+    <div id="stats">
+        <h2>Progress Stats</h2>
+        <canvas id="progressChart"></canvas>
+    </div>
     <script>
         let problems = [], index = 0, correctAnswers = [], times = [], timer, answerTimeout;
+        let progressData = JSON.parse(localStorage.getItem("progressData")) || [];
         function startQuiz() {
             let numQuestions = document.getElementById("numQuestions").value;
             let timeLimit = document.getElementById("timeLimit").value * 1000;
@@ -120,17 +127,28 @@
             let resultsDiv = document.getElementById("results");
             resultsDiv.innerHTML = "<h2>Results</h2>";
             let totalTime = times.reduce((a, b) => a + b, 0);
-            let fastest = Math.min(...times);
-            let slowest = Math.max(...times);
-            let missed = correctAnswers.filter(ans => ans.includes("Missed")).length;
-            resultsDiv.innerHTML += `Total Time: ${totalTime}s<br>Mean Time: ${(totalTime / times.length).toFixed(2)}s<br>`;
-            resultsDiv.innerHTML += `Fastest: ${fastest}s<br>Slowest: ${slowest}s<br>Missed: ${missed}<br><br>`;
-            resultsDiv.innerHTML += "<h3>Problem Breakdown</h3>";
-            for (let i = 0; i < problems.length; i++) {
-                resultsDiv.innerHTML += `${problems[i].a} x ${problems[i].b} = ${problems[i].answer} (Time: ${times[i]}s, ${correctAnswers[i]})<br>`;
-            }
+            let meanTime = (totalTime / times.length).toFixed(2);
+            progressData.push(parseFloat(meanTime));
+            localStorage.setItem("progressData", JSON.stringify(progressData));
+            resultsDiv.innerHTML += `Mean Time: ${meanTime}s<br>`;
             resultsDiv.style.display = "block";
             document.getElementById("settings").style.display = "block";
+        }
+        function showStats() {
+            document.getElementById("stats").style.display = "block";
+            let ctx = document.getElementById("progressChart").getContext("2d");
+            new Chart(ctx, {
+                type: "line",
+                data: {
+                    labels: progressData.map((_, i) => `Attempt ${i + 1}`),
+                    datasets: [{
+                        label: "Mean Time (s)",
+                        data: progressData,
+                        borderColor: "limegreen",
+                        fill: false
+                    }]
+                }
+            });
         }
     </script>
 </body>
