@@ -48,6 +48,9 @@
             padding: 15px;
             font-size: 1.5em;
         }
+        .missed {
+            color: red;
+        }
     </style>
 </head>
 <body>
@@ -103,7 +106,7 @@
                 answerInput.style.display = "none";
                 answerTimeout = setTimeout(() => {
                     times.push(timeLimit / 1000);
-                    correctAnswers.push(`Missed (Ans: ${problem.answer})`);
+                    correctAnswers.push(`<span class='missed'>Missed (Ans: ${problem.answer})</span>`);
                     index++;
                     nextProblem(timeLimit);
                 }, 5000);
@@ -114,7 +117,7 @@
                     clearTimeout(timer);
                     clearTimeout(answerTimeout);
                     times.push((Date.now() - startTime) / 1000);
-                    correctAnswers.push(problem.a + " × " + problem.b + " = " + problem.answer + " (Correct)");
+                    correctAnswers.push(`${problem.a} × ${problem.b} = ${problem.answer} (Correct)`);
                     index++;
                     nextProblem(timeLimit);
                 }
@@ -126,28 +129,15 @@
             resultsDiv.innerHTML = "<h2>Results</h2>";
             let totalTime = times.reduce((a, b) => a + b, 0);
             let meanTime = (totalTime / times.length).toFixed(2);
+            let bestOf10 = Math.min(...times.slice(-10));
+            let bestOf50 = Math.min(...times.slice(-50));
+            let bestOf100 = Math.min(...times.slice(-100));
             progressData.push(parseFloat(meanTime));
             localStorage.setItem("progressData", JSON.stringify(progressData));
-            resultsDiv.innerHTML += `Mean Time: ${meanTime}s<br><br>`;
+            resultsDiv.innerHTML += `Set Mean: ${meanTime}s | BO10: ${bestOf10}s | BO50: ${bestOf50}s | BO100: ${bestOf100}s<br><br>`;
             resultsDiv.innerHTML += correctAnswers.map((result, i) => `Q${i + 1}: ${result} - Time: ${times[i]}s<br>`).join("");
             resultsDiv.style.display = "block";
             document.getElementById("settings").style.display = "block";
-        }
-        function showStats() {
-            document.getElementById("stats").style.display = "block";
-            let ctx = document.getElementById("progressChart").getContext("2d");
-            new Chart(ctx, {
-                type: "line",
-                data: {
-                    labels: progressData.map((_, i) => `Attempt ${i + 1}`),
-                    datasets: [{
-                        label: "Mean Time (s)",
-                        data: progressData,
-                        borderColor: "limegreen",
-                        fill: false
-                    }]
-                }
-            });
         }
     </script>
 </body>
