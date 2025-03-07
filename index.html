@@ -12,17 +12,21 @@
             text-align: center;
         }
         #problem {
-            font-size: 3em;
+            font-size: 4em;
             margin: 20px 0;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            line-height: 1.5em;
         }
         #answer {
             background: black;
             border: 2px solid limegreen;
             color: limegreen;
-            font-size: 2em;
+            font-size: 3em;
             text-align: center;
             outline: none;
-            width: 150px;
+            width: 200px;
             margin: 20px auto;
             display: block;
         }
@@ -30,23 +34,24 @@
             display: none;
             text-align: left;
             margin: 20px auto;
-            width: 50%;
+            width: 60%;
             border: 1px solid limegreen;
-            padding: 10px;
+            padding: 15px;
+            font-size: 1.5em;
         }
     </style>
 </head>
 <body>
-    <h1>Mental Math Trainer</h1>
+    <h1 style="font-size: 3em;">Mental Math Trainer</h1>
     <div id="settings">
-        <label>Number of Questions: <input type="number" id="numQuestions" value="10"></label>
-        <label>Time per Question (seconds): <input type="number" id="timeLimit" value="2"></label>
-        <button onclick="startQuiz()">Start</button>
+        <label style="font-size: 1.5em;">Number of Questions: <input type="number" id="numQuestions" value="10"></label>
+        <label style="font-size: 1.5em;">Time per Question (seconds): <input type="number" id="timeLimit" value="2"></label>
+        <button style="font-size: 1.5em;" onclick="startQuiz()">Start</button>
     </div>
     <div id="quiz" style="display:none;">
         <div id="problem"></div>
         <input type="text" id="answer" autocomplete="off" autofocus>
-        <div id="timer"></div>
+        <div id="timer" style="font-size: 2em; margin-top: 10px;"></div>
     </div>
     <div id="results"></div>
     <script>
@@ -70,17 +75,20 @@
         function nextProblem(timeLimit) {
             if (index >= problems.length) return showResults();
             let problem = problems[index];
-            document.getElementById("problem").innerText = `${problem.a} x ${problem.b}`;
+            document.getElementById("problem").innerHTML = `${problem.a}<br>x<br>${problem.b}`;
             let answerInput = document.getElementById("answer");
             answerInput.value = "";
             answerInput.style.display = "block";
             answerInput.focus();
             let startTime = Date.now();
             timer = setTimeout(() => {
-                times.push(timeLimit / 1000);
-                correctAnswers.push("Missed");
-                index++;
-                nextProblem(timeLimit);
+                document.getElementById("problem").innerHTML = `${problem.a}<br>x<br>${problem.b}<br>=<br>${problem.answer}`;
+                setTimeout(() => {
+                    times.push(timeLimit / 1000);
+                    correctAnswers.push(`Missed (Ans: ${problem.answer})`);
+                    index++;
+                    nextProblem(timeLimit);
+                }, 5000);
             }, timeLimit);
             answerInput.oninput = function() {
                 let userAnswer = parseInt(this.value);
@@ -100,7 +108,7 @@
             let totalTime = times.reduce((a, b) => a + b, 0);
             let fastest = Math.min(...times);
             let slowest = Math.max(...times);
-            let missed = correctAnswers.filter(ans => ans === "Missed").length;
+            let missed = correctAnswers.filter(ans => ans.includes("Missed")).length;
             resultsDiv.innerHTML += `Total Time: ${totalTime}s<br>Mean Time: ${(totalTime / times.length).toFixed(2)}s<br>`;
             resultsDiv.innerHTML += `Fastest: ${fastest}s<br>Slowest: ${slowest}s<br>Missed: ${missed}<br><br>`;
             resultsDiv.innerHTML += "<h3>Problem Breakdown</h3>";
