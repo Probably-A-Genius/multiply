@@ -19,6 +19,15 @@
             align-items: center;
             line-height: 1.5em;
         }
+        .multiplication-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+        .multiplication-container span {
+            font-size: 4em;
+            margin-right: 20px;
+        }
         #answer {
             background: black;
             border: 2px solid limegreen;
@@ -49,7 +58,7 @@
         <button style="font-size: 1.5em;" onclick="startQuiz()">Start</button>
     </div>
     <div id="quiz" style="display:none;">
-        <div id="problem"></div>
+        <div id="problem" class="multiplication-container"></div>
         <input type="text" id="answer" autocomplete="off" autofocus>
         <div id="timer" style="font-size: 2em; margin-top: 10px;"></div>
     </div>
@@ -75,14 +84,14 @@
         function nextProblem(timeLimit) {
             if (index >= problems.length) return showResults();
             let problem = problems[index];
-            document.getElementById("problem").innerHTML = `${problem.a}<br>x<br>${problem.b}`;
+            document.getElementById("problem").innerHTML = `<span>x</span> <div>${problem.a}<br>${problem.b}</div>`;
             let answerInput = document.getElementById("answer");
             answerInput.value = "";
             answerInput.style.display = "block";
             answerInput.focus();
             let startTime = Date.now();
             timer = setTimeout(() => {
-                document.getElementById("problem").innerHTML = `${problem.a}<br>x<br>${problem.b}<br>=<br>${problem.answer}`;
+                document.getElementById("problem").innerHTML = `<span>x</span> <div>${problem.a}<br>${problem.b}<br>=<br>${problem.answer}</div>`;
                 setTimeout(() => {
                     times.push(timeLimit / 1000);
                     correctAnswers.push(`Missed (Ans: ${problem.answer})`);
